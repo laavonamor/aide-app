@@ -1,6 +1,6 @@
 import { supabase } from '../../../lib/supabase'
-import https from 'https'
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 const TODAY = new Date().toISOString().split('T')[0]
 
 let tokenCache = { token: null, expiresAt: 0 }
@@ -8,7 +8,6 @@ let tokenCache = { token: null, expiresAt: 0 }
 async function getToken() {
   if (tokenCache.token && Date.now() < tokenCache.expiresAt) return tokenCache.token
 
-  const agent = new https.Agent({ rejectUnauthorized: false })
 
   const res = await fetch('https://ngw.devices.sberbank.ru:9443/api/v2/oauth', {
     method: 'POST',
@@ -19,7 +18,6 @@ async function getToken() {
       'RqUID': crypto.randomUUID(),
     },
     body: 'scope=GIGACHAT_API_PERS',
-    agent,
   })
 
   if (!res.ok) {
@@ -34,7 +32,6 @@ async function getToken() {
 
 async function callGigaChat(systemPrompt, messages) {
   const token = await getToken()
-  const agent = new https.Agent({ rejectUnauthorized: false })
 
   const res = await fetch('https://gigachat.devices.sberbank.ru/api/v1/chat/completions', {
     method: 'POST',
@@ -52,7 +49,6 @@ async function callGigaChat(systemPrompt, messages) {
       max_tokens: 1200,
       temperature: 0.7,
     }),
-    agent,
   })
 
   if (!res.ok) {
