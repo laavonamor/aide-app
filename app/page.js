@@ -79,8 +79,10 @@ function useVoice(onResult, onError) {
 }
 
 // ─── API ──────────────────────────────────────────────────────────────────────
+const BACKEND = 'https://aide-v2-backend.onrender.com'
+
 async function api(path, opts = {}) {
-  const res = await fetch('/api/' + path, {
+  const res = await fetch(BACKEND + '/api/' + path, {
     method: opts.method || (opts.body ? 'POST' : 'GET'),
     headers: opts.body ? { 'Content-Type': 'application/json' } : {},
     body: opts.body ? JSON.stringify(opts.body) : undefined,
